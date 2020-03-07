@@ -1,0 +1,438 @@
+<script src="https://unpkg.com/vue@2.5.17"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue-router@3.0.1/dist/vue-router.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<style>
+    [v-cloak]{
+        display: none
+    }
+</style>
+
+<div id="app" class="container">
+    <nav v-cloak>
+        <router-link to="/home">ホーム</router-link>
+        <router-link to="/profile">プロフィール</router-link>
+        <router-link to="/tasks/new?redirect=true">タスクの追加</router-link>
+        <router-link to="/users/new?redirect=true">ユーザー登録</router-link>
+        <router-link to="/logout" v-show="Auth.loggedIn()">ログアウト</router-link>
+    </nav>
+    <router-view></router-view>
+</div>
+
+<script type="text/x-template" id="home">
+    <div>
+        <h2>ホームです。</h2>
+        <ul>
+            <li v-for="task in tasks">[[ task ]]</li>
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-template" id="profile-user">
+    <div>
+        <h2>プロフィールです。</h2>
+        <p>[[ user ]]</p>
+    </div>
+</script>
+
+<script type="text/x-template" id="task-create">
+    <div>
+        <h2>タスクの追加</h2>
+        <div class="form-group">
+            <label>内容</label>
+            <input type="text" v-model="text" class="form-control">
+            <div class="text-danger">内容を入力してください。</div>
+        </div>
+        <div>
+            <input type="button" @click="createTask" value="タスク作成" class="btn btn-outline-success">
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="user-create">
+    <div>
+        <h2>ユーザー登録</h2>
+        <form @submit.prevent="createUser">
+            <div class="form-group">
+                <label>username</label>
+                <input type="text" v-model="username" class="form-control" placeholder="username">
+                <div v-show="check_username" class="text-danger">ユーザーネームを入力してください</div>
+            </div>
+            <div class="form-group">
+                <label>email</label>
+                <input type="email" v-model="email" class="form-control" placeholder="email">
+                <div v-show="check_email" class="text-danger">メールアドレスを入力してください。</div>
+            </div>
+            <div class="form-group">
+                <label>password</label>
+                <input type="password" v-model="password" class="form-control" placeholder="password">
+                <div v-show="check_password" class="text-danger">パスワードを入力してください。</div>
+            </div>
+            <div class="form-group">
+                <label>password_confirm</label>
+                <input type="password" v-model="password_confirm" class="form-control" placeholder="password_confirm">
+                <div v-show="check_confirm" class="text-danger">パスワードと違います。</div>
+            </div>
+            <button type="submit" class="btn btn-outline-success">ユーザー作成</button>
+        </form>
+    </div>
+</script>
+
+<script type="text/x-template" id="login">
+    <div>
+        <h2>ログイン</h2>
+        <p v-if="$route.query.redirect">ログインしてください。</p>
+        <form @submit.prevent="login">
+            <div class="form-group">
+                <label>Email</label>
+                <input v-model="email" placeholder="email" class="form-control">
+                <div class="text-danger" v-show="check_email">メールアドレスを入力してください。</div>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" v-model="password" placeholder="password" class="form-control">
+                <div class="text-danger" v-show="check_password">パスワードを入力してください。</div>
+            </div>
+            <button type="submit" class="btn btn-outline-success">ログイン</button>
+            <p v-if="error" class="text-danger">ログインに失敗しました。</p>
+        </form>
+    </div>
+</script>
+
+
+<script>
+
+var Home = {
+    template: '#home',
+    delimiters: ['[[', ']]'],
+    data: function(){
+        return{
+            tasks: function () {
+                return []
+            }
+        }
+    },
+    created: function () {
+        this.collectTask()
+    },
+    watch: {
+        '$route': 'collectTask'
+    },
+    methods: {
+        collectTask: function () {
+            var api = axios.create({
+                baseURL: 'http://192.168.99.100:5000'
+            });
+            api.get('/api/task/',{
+                    headers: {
+                        Authorization: `Bearer ${localStorage.token}`
+                    }
+                })
+                .then(response=>{
+                console.log(response),
+                this.tasks=response.data
+                })
+                .catch(response=>{
+                    console.log(response)
+                })
+        }
+    }
+};
+
+var ProfileUser = {
+    template: '#profile-user',
+    delimiters: ['[[', ']]'],
+    data: function () {
+        return{
+            user: null,
+            token: localStorage.token
+        }
+    },
+    created: function () {
+        this.showUser()
+    },
+    watch: {
+        '$route': 'showUser'
+    },
+    methods: {
+        showUser: function () {
+            var api = axios.create({
+                baseURL: 'http://192.168.99.100:5000'
+            });
+            api.get('/api/profile', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.token}`
+                    }
+                })
+                .then(response=>{
+                    console.log(response),
+                    this.user = response.data
+                }).catch(response=>{
+                    console.log(response)
+                })
+        }
+    }
+};
+
+var TaskCreate = {
+    template: '#task-create',
+    delimiters: ['[[', ']]'],
+    data: function () {
+        return{
+            text: '',
+            error: null
+        }
+    },
+    computed: {
+        check_text: function () {
+            return this.text.trim()===''
+        }
+    },
+    methods: {
+        createTask: function () {
+            if (this.text.trim()===''){
+                return
+            }else{
+                var api = axios.create({
+                    baseURL: 'http://192.168.99.100:5000'
+                });
+                api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.token}`;
+                api.post('/api/task/create', {
+                        text: this.text,
+                    })
+                    .then(response=>{
+                        console.log(response.data),
+                        this.$router.push('/home')
+                    }).catch(response=>{
+                        console.log(response),
+                        console.log(api)
+                        this.$router.push('/home')
+                    })
+            }
+        }
+    }
+};
+
+var UserCreate = {
+    template: '#user-create',
+    delimiters: ["[[", "]]"],
+    data: function () {
+        return{
+            username: "",
+            email: "",
+            password: "",
+            password_confirm: ""
+        }
+    },
+    computed: {
+        check_username: function () {
+            return this.username.trim()===''
+        },
+        check_email: function () {
+            return this.email.trim()===''
+        },
+        check_password: function () {
+            return this.password.trim()===''
+        },
+        check_confirm: function () {
+            return this.password.trim()!==this.password_confirm.trim()
+        }
+    },
+    methods: {
+        createUser: function () {
+            var api = axios.create({
+                baseURL: 'http://192.168.99.100:5000'
+            });
+            if (this.email.trim()===''){
+                return
+            }
+            if(this.username.trim()===''){
+                return
+            }
+            if(this.password_confirm.trim()==='' && this.password_confirm.trim()!==this.password){
+                return
+            }
+            if (this.password.trim()===''){
+                return
+            }
+            let _this = this;
+            api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.token}`;
+            api.post('/api/user/create', {
+                username: this.username,
+                email: this.email,
+                password: this.password
+                })
+                .then(response=>{
+                    console.log(response.data),
+                    this.$router.push('/home')
+                }).catch(response=>{
+                    console.log(response),
+                    this.$router.push('/home')
+            })
+        }
+    }
+};
+
+var Auth = {
+    data: function() {
+        return {
+            flag: 0
+        }
+    },
+    login: function (email, password, cb) {
+        var api = axios.create({
+            baseURL: 'http://192.168.99.100:5000'
+        });
+        let _this = this;
+        api.post('/api/auth', {
+            email: email, password: password
+        }).then(response=>{
+            localStorage.token = response.data.token,
+            _this.flag = response.data.flag,
+            console.log(response.data.token, _this.flag)
+        }).catch(response=>{
+            console.log(response)
+        });
+        setTimeout(function () {
+            if (_this.flag == 1) {
+                if (cb) {
+                    cb(true)
+                }
+            } else {
+                if (cb) {
+                    cb(false)
+                }
+            }
+        }, 500)
+    },
+    logout: function(){
+        delete localStorage.token;
+    },
+    loggedIn: function () {
+        return !!localStorage.token;
+    },
+    returnToken: function () {
+        return localStorage.token;
+    }
+};
+
+
+
+
+var Login = {
+    template: '#login',
+    delimiters: ['[[', ']]'],
+    data: function(){
+        return{
+            email: "",
+            password: "",
+            error: false
+        }
+    },
+    computed: {
+        check_email: function(){
+            return this.email.trim()===''
+        },
+        check_password: function(){
+            return this.password.trim()===''
+        }
+    },
+    methods: {
+        login: function () {
+            if (this.email.trim()===''){
+            }
+            if (this.password.trim()===''){
+                return
+            }
+            let _this = this;
+            Auth.login(this.email, this.password, function (loggedIn) {
+                if(!loggedIn){
+                    _this.error = true
+                }else{
+                    _this.$router.replace(_this.$route.query.redirect || '/')
+                }
+            })
+        }
+    }
+};
+
+
+var router = new VueRouter({
+    routes: [
+        {
+            path: '/home',
+            component: Home,
+            beforeEnter: function (to, from, next) {
+                if(!Auth.loggedIn()){
+                    next({
+                        path: '/login',
+                        query: {redirect: to.fullPath}
+                    })
+                }else{
+                    next()
+                }
+            }
+        },
+        {
+            path: '/profile',
+            component: ProfileUser,
+            beforeEnter: function (to, from, next) {
+                if(!Auth.loggedIn()){
+                    next({
+                        path: '/login',
+                        query: {redirect: to.fullPath}
+                    })
+                }else{
+                    next()
+                }
+            }
+        },
+        {
+            path: '/users/new',
+            component: UserCreate
+        },
+        {
+            path: '/tasks/new',
+            component: TaskCreate,
+            beforeEnter: function (to, from, next) {
+                if(!Auth.loggedIn()){
+                    next({
+                        path: '/login',
+                        query: {redirect: to.fullPath}
+                    })
+                }else{
+                    next()
+                }
+            }
+        },
+        {
+            path: '/login',
+            component: Login
+        },
+        {
+            path: '/logout',
+            beforeEnter: function (to, from, next) {
+                Auth.logout();
+                next("/login")
+            }
+        },
+        {
+            path: '*',
+            redirect: '/home'
+        }
+    ]
+});
+
+var app = new Vue({
+    delimiters: ['[[', ']]'],
+    data: {
+        Auth: Auth
+    },
+    router: router
+}).$mount('#app')
+
+</script>

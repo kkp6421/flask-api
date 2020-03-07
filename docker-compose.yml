@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  data_store:
+    image: busybox
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - /var/lib/postgresql/data
+    container_name: postgres-datastore_container
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: python
+      POSTGRES_PASSWORD: pythonista36
+      TZ: Asia/Tokyo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-datastore_container
+    container_name: db-postgres_container
+
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/myapp
+    environment:
+      TZ: Asia/Tokyo
+    env_file: .env
+    depends_on:
+      - db
+    container_name: web_container
