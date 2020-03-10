@@ -3,6 +3,7 @@ from app import create_app, db
 from app.models import Task, User, Tag, TaskTag
 from flask_script import Server, Shell, Manager
 from flask_migrate import Migrate, MigrateCommand
+
 app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
 
 manager = Manager(app)

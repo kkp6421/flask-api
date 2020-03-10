@@ -9,3 +9,4 @@ Flask-Script==2.0.6
 Flask-SQLAlchemy==2.3.2
 python-dotenv
 Flask-JWT-Extended
+psycopg2

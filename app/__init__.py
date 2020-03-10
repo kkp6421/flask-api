@@ -27,8 +27,14 @@ def create_app(config_name):
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
+    from .tag import tag as tag_blueprint
+    app.register_blueprint(tag_blueprint, url_prefix='/api/tags')
+
     from .task import task as task_blueprint
-    app.register_blueprint(task_blueprint, url_prefix='/api/task')
+    app.register_blueprint(task_blueprint, url_prefix='/api/tasks')
+
+    from .user import user as user_blueprint
+    app.register_blueprint(user_blueprint, url_prefix='/api/users')
 
     return app
 

@@ -13,104 +13,160 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
     <style>
-        [v-cloak]{
-            display: none
-        }
         body{
-            background-color: #f9f9f9;
+            font-family: 'Franklin Gothic Medium';
+            background-color: #fcfcfc;
         }
         label{
-            font-size: 0.7rem;
+            font-size: 0.85rem;
+            color: #888888;
         }
         a, a:visited, a:focus, a:hover {
             text-decoration: none;
         }
+        .nav-item{
+            padding: 0.3rem 1.5rem 0.3rem 0.25rem;
+        }
         .link-item{
             text-align: center;
-            font-size: 0.6rem;
-            padding: 10px 0px 10px 0px;
-        }
-        .link-item:hover{
-            background-color: #f6f6f6;
+            font-size: 0.9rem;
         }
         .link-item-icon{
-            font-size: 1.4rem;
+            font-size: 0.9rem;
         }
         .link-item-icon-sub{
             position: relative;
-            bottom: 3px;
-            left: 2px;
-            font-size: 0.65rem;
+            bottom: 6px;
+            left: 1.5px;
+            font-size: 0.5rem;
         }
         .btn{
+            position: relative;
+            top: 8px;
             font-size: 0.8rem;
         }
-        #app > div > div > div > div.col-md-6.col-lg-6 > div > a{
+        .form-group{
+            margin-bottom: 10px;
+        }
+        #navbarSupportedContent > ul > li a{
             color: #5cb85c;
+        }
+        #navbarSupportedContent > ul > li a:hover{
+            color: #007700;
+        }
+        #app > div > div > form > div > input::placeholder{
+            color: #cccccc;
         }
         .text-danger{
             font-size: 0.6rem;
+        }
+        .box-shadow {
+            padding: 0.5rem 1.5rem;
+            box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="bg-white" style="box-shadow: 0.5px 0.5px 0.5px 0.5px rgba(0,0,0,0.4);">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-3 col-lg-3"></div>
-                    <div class="col-md-6 col-lg-6">
-                        <div class="row">
-                            <router-link to="/home" class="link-item col-3 col-md-3 col-lg3"><i class="fas fa-clipboard link-item-icon"></i><br/>タスク一覧</router-link>
-                            <router-link to="/tasks/new?redirect=true" class="link-item col-3 col-md-3 col-lg3"><i class="fas fa-clipboard link-item-icon"></i><i class="fas fa-plus link-item-icon-sub"></i><br/>タスクの追加</router-link>
-                            <router-link to="/profile" class="link-item col-3 col-md-3 col-lg3"><i class="fas fa-user-cog link-item-icon"></i><br/>ユーザー情報</router-link>
-                            <router-link to="/users/new?redirect=true" class="link-item col-3 col-md-3 col-lg3" v-show="!Auth.loggedIn()"><i class="fas fa-user-plus link-item-icon"></i><br/>ユーザー登録</router-link>
-                            <router-link to="/logout" v-show="Auth.loggedIn()" class="link-item col-3 col-md-3 col-lg3"><i class="fas fa-sign-out-alt link-item-icon"></i><br/>ログアウト</router-link>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-lg-3"></div>
-                </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+            <a class="navbar-brand text-secondary" href="/#/tasks" style="padding-right: 4.0rem; font-size: 1.5rem; margin: -0.5rem 0rem;">Task Manager</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" style="font-size: 1.0rem;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <router-link to="/tasks" class="link-item"><i class="fas fa-chalkboard link-item-icon"></i>&nbsp;Task一覧</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/tasks/new" class="link-item"><i class="fas fa-clipboard link-item-icon"></i><i class="fas fa-plus link-item-icon-sub"></i>&nbsp;&nbsp;Taskの追加</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/tags/new" class="link-item"><i class="fas fa-tags"></i><i class="fas fa-plus link-item-icon-sub"></i>&nbsp;&nbsp; Tagの追加</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/user-info" class="link-item"><i class="fas fa-user-cog link-item-icon"></i>&nbsp;User情報</router-link>
+                    </li>
+                    <li class="nav-item" v-show="!Auth.loggedIn()" >
+                        <router-link to="/users/new" class="link-item"><i class="fas fa-user link-item-icon"></i><i class="fas fa-plus link-item-icon-sub"></i>&nbsp;&nbsp;Userの作成</router-link>
+                    </li>
+                    <li class="nav-item" v-show="Auth.loggedIn()">
+                        <router-link to="/logout" class="link-item"><i class="fas fa-sign-out-alt link-item-icon"></i>&nbsp;ログアウト</router-link>
+                    </li>
+                </ul>
             </div>
-        </div>
-        <br/>
+        </nav>
+        <hr style="color: #222222; position: relative; bottom: 15px;">
         <div class="container">
             <router-view></router-view>
         </div>
     </div>
 </body>
-    <script type="text/x-template" id="home">
+    <script type="text/x-template" id="tasks">
         <div>
-            <h4>ホームです。</h4>
+            <h4>Tasks</h4>
             <ul>
                 <li v-for="task in tasks">[[ task ]]</li>
             </ul>
         </div>
     </script>
 
-    <script type="text/x-template" id="profile-user">
+    <script type="text/x-template" id="task-create">
         <div>
-            <h4>プロフィールです。</h4>
-            <p>[[ user ]]</p>
+            <h4>Add Task</h4>
+            <div class="form-group">
+                <label>内容</label>
+                <input type="text" v-model="text" class="form-control">
+                <div class="text-danger" v-show="check_text">内容を入力してください。</div>
+            </div>
+            <h5>Choose Tag with new Task</h5>
+            <div class="row">
+                <div v-for="(tag, i) in tags" :key="i" class="col-lg-2 col-md-2 col-6">
+                    <label :for="'tag'+i" class="bg-white box-shadow rounded" style="width: 100%;"><input :id="'tag'+i" type="checkbox" :value="tag" v-model="selected_tags">[[ tag.text ]]</label>
+                </div>
+            </div>
+            <div class="bg-white" style="width: 97%; margin: 0 auto;">
+                <div class="box-shadow row">
+                    <div v-show="selected_tags.length==0" class="col-lg-2 col-md-2 col-6">
+                        <div class="rounded" style="background-color: #f0f0f0; text-align: center; color: #666666;">未選択</div>
+                    </div>
+                    <div v-for="selected_tag in selected_tags" class="col-lg-2 col-md-2 col-6" style="padding-bottom: 0.5rem;">
+                        <div class="rounded" style="background-color: #f0f0f0; text-align: center; color: #666666;">#[[ selected_tag.text ]]</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <input type="button" @click="createTask" value="タスク作成" class="btn btn-outline-success">
+            </div>
+            <br/>
         </div>
     </script>
 
-    <script type="text/x-template" id="task-create">
+    <script type="text/x-template" id="tag-create">
         <div>
-            <h4>タスクの追加</h4>
+            <h4>Add Tag</h4>
             <div class="form-group">
                 <label>内容</label>
                 <input type="text" v-model="text" class="form-control">
                 <div class="text-danger" v-show="check_text">内容を入力してください。</div>
             </div>
             <div>
-                <input type="button" @click="createTask" value="タスク作成" class="btn btn-outline-success">
+                <input type="button" @click="createTag" value="タグ作成" class="btn btn-outline-success">
             </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="user-info">
+        <div>
+            <h4>Current User Info</h4>
+            <p>[[ user ]]</p>
         </div>
     </script>
 
     <script type="text/x-template" id="user-create">
         <div>
-            <h4>ユーザー登録</h4>
+            <h4>Create User</h4>
             <form @submit.prevent="createUser">
                 <div class="form-group">
                     <label>username</label>
@@ -121,11 +177,13 @@
                     <label>email</label>
                     <input type="email" v-model="email" class="form-control" placeholder="email">
                     <div v-show="check_email" class="text-danger">メールアドレスを入力してください。</div>
+                    <div v-if="error" class="text-danger">このメールアドレスはすでに使われている可能性があります。</div>
                 </div>
                 <div class="form-group">
-                    <label>password</label>
+                    <label>password(min-length: 6)</label>
                     <input type="password" v-model="password" class="form-control" placeholder="password">
                     <div v-show="check_password" class="text-danger">パスワードを入力してください。</div>
+                    <div v-show="check_password_length" class="text-danger">パスワードの文字数が足りません。</div>
                 </div>
                 <div class="form-group">
                     <label>password_confirm</label>
@@ -134,6 +192,7 @@
                     <div v-show="check_confirm" class="text-danger">パスワードと違います。</div>
                 </div>
                 <button type="submit" class="btn btn-outline-success">ユーザー作成</button>
+                <div class="text-danger" v-if="error" style="position: relative; top: 8px;">ユーザーを作成できません。</div>
             </form>
         </div>
     </script>
@@ -154,13 +213,19 @@
                     <div class="text-danger" v-show="check_password">パスワードを入力してください。</div>
                 </div>
                 <button type="submit" class="btn btn-outline-success">ログイン</button>
-                <p v-if="error" class="text-danger">ログインに失敗しました。</p>
+                <p v-if="error" class="text-danger" style="position: relative; top: 8px;">ログインに失敗しました。</p>
             </form>
         </div>
     </script>
 
+    <script type="text/x-template" id="not-found">
+        <div>
+            <h4>404 Not Found</h4>
+        </div>
+    </script>
 
     <script>
+        const url = "https://kkp6421-flask-api.herokuapp.com/";
         var Auth = {
             data: function() {
                 return {
@@ -169,15 +234,14 @@
             },
             login: function (email, password, cb) {
                 var api = axios.create({
-                    baseURL: 'http://192.168.99.100:5000'
+                    baseURL: url
                 });
                 let _this = this;
                 api.post('/api/auth', {
                     email: email, password: password
                 }).then(response=>{
                     localStorage.token = response.data.token,
-                    _this.flag = response.data.flag,
-                    console.log(response.data.token, _this.flag)
+                    _this.flag = response.data.flag
                 }).catch(response=>{
                     console.log(response)
                 });
@@ -201,8 +265,8 @@
             }
         };
 
-        var Home = {
-            template: '#home',
+        var Tasks = {
+            template: '#tasks',
             delimiters: ['[[', ']]'],
             data: function(){
                 return{
@@ -220,10 +284,10 @@
             methods: {
                 collectTask: function () {
                     var api = axios.create({
-                        baseURL: 'http://192.168.99.100:5000'
+                        baseURL: url
                     });
                     let _this = this;
-                    api.get('/api/task/',{
+                    api.get('/api/tasks/',{
                         headers: {
                             Authorization: `Bearer ${localStorage.token}`
                         }
@@ -240,8 +304,123 @@
             }
         };
 
-        var ProfileUser = {
-            template: '#profile-user',
+        var TaskCreate = {
+            template: '#task-create',
+            delimiters: ['[[', ']]'],
+            data: function () {
+                return{
+                    text: '',
+                    error: null,
+                    tags: [],
+                    selected_tags: [],
+                    selected_tags_id: []
+                }
+            },
+            created: function (){
+                this.collectTag()
+            },
+            watch: {
+                '$route': 'collectTag'
+            },
+            computed: {
+                check_text: function () {
+                    return this.text.trim()===''
+                }
+            },
+            methods: {
+                collectTag: function () {
+                    var api = axios.create({
+                        baseURL: url
+                    });
+                    let _this = this;
+                    api.get('/api/tags/',{
+                        headers: {
+                            Authorization: `Bearer ${localStorage.token}`
+                        }
+                    })
+                        .then(response=>{
+                        console.log(response),
+                        this.tags=response.data
+                    })
+                .catch(response=>{
+                        console.log(response),
+                        Auth.logout()
+                    })
+                },
+                createTask: function () {
+                    if (this.text.trim()===''){
+                        return
+                    }else{
+                        for(var i=0; i<this.selected_tags.length; i++){
+                            this.selected_tags_id.push(this.selected_tags[i].id)
+                        }
+                        var api = axios.create({
+                            baseURL: url
+                        });
+                        api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.token}`;
+                        api.post('/api/tasks/create', {
+                            text: this.text,
+                            selected_tags_id: this.selected_tags_id
+                        })
+                            .then(response=>{
+                            console.log(response.data),
+                            this.$router.push('/tasks')
+                        }).catch(response=>{
+                            console.log(response),
+                            Auth.logout()
+                        })
+                    }
+                }
+            }
+        };
+
+        var TagCreate = {
+            template: '#tag-create',
+            delimiters: ["[[", "]]"],
+            data: function () {
+                return{
+                    tags: [],
+                    text: '',
+                    error: null
+                }
+            },
+            created: function(){
+                this.collectTag()
+            },
+            watch: {
+                '$route': 'collectTag'
+            },
+            computed: {
+                check_text: function () {
+                    return this.text.trim()===''
+                }
+            },
+            methods: {
+                createTag: function () {
+                    if (this.text.trim()===''){
+                        return
+                    }else{
+                        var api = axios.create({
+                            baseURL: url
+                        });
+                        api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.token}`;
+                        api.post('/api/tags/create', {
+                            text: this.text,
+                        })
+                            .then(response=>{
+                            console.log(response.data),
+                            this.$router.push('/tasks/new')
+                        }).catch(response=>{
+                            console.log(response),
+                            Auth.logout()
+                        })
+                    }
+                }
+            }
+        };
+
+        var UserInfo = {
+            template: '#user-info',
             delimiters: ['[[', ']]'],
             data: function () {
                 return{
@@ -258,10 +437,10 @@
             methods: {
                 showUser: function () {
                     var api = axios.create({
-                        baseURL: 'http://192.168.99.100:5000'
+                        baseURL: url
                     });
                     let _this = this;
-                    api.get('/api/profile', {
+                    api.get('/api/users/info', {
                         headers: {
                             Authorization: `Bearer ${localStorage.token}`
                         }
@@ -277,44 +456,6 @@
             }
         };
 
-        var TaskCreate = {
-            template: '#task-create',
-            delimiters: ['[[', ']]'],
-            data: function () {
-                return{
-                    text: '',
-                    error: null
-                }
-            },
-            computed: {
-                check_text: function () {
-                    return this.text.trim()===''
-                }
-            },
-            methods: {
-                createTask: function () {
-                    if (this.text.trim()===''){
-                        return
-                    }else{
-                        var api = axios.create({
-                            baseURL: 'http://192.168.99.100:5000'
-                        });
-                        api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.token}`;
-                        api.post('/api/task/create', {
-                            text: this.text,
-                        })
-                            .then(response=>{
-                            console.log(response.data),
-                            this.$router.push('/home')
-                        }).catch(response=>{
-                            console.log(response),
-                            Auth.logout()
-                        })
-                    }
-                }
-            }
-        };
-
         var UserCreate = {
             template: '#user-create',
             delimiters: ["[[", "]]"],
@@ -323,7 +464,8 @@
                     username: "",
                     email: "",
                     password: "",
-                    password_confirm: ""
+                    password_confirm: "",
+                    error: false
                 }
             },
             computed: {
@@ -336,6 +478,9 @@
                 check_password: function () {
                     return this.password.trim()===''
                 },
+                check_password_length: function(){
+                    return this.password.length < 6
+                },
                 check_confirm: function () {
                     return this.password.trim()!==this.password_confirm.trim()
                 },
@@ -346,7 +491,7 @@
             methods: {
                 createUser: function () {
                     var api = axios.create({
-                        baseURL: 'http://192.168.99.100:5000'
+                        baseURL: url
                     });
                     if (this.email.trim()===''){
                         return
@@ -360,18 +505,21 @@
                     if (this.password.trim()===''){
                         return
                     }
+                    if(this.password.length<6){
+                        return
+                    }
                     let _this = this;
                     api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.token}`;
-                    api.post('/api/user/create', {
+                    api.post('/api/users/create', {
                         username: this.username,
                         email: this.email,
                         password: this.password
                     })
                         .then(response=>{
-                        console.log(response.data),
                         this.$router.push('/login')
                     }).catch(response=>{
-                        console.log(response),
+                        this.error = true,
+                        console.log(response.data),
                         this.$router.push('/users/new')
                     })
                 }
@@ -408,18 +556,23 @@
                         if(!loggedIn){
                             _this.error = true
                         }else{
-                            _this.$router.replace(_this.$route.query.redirect || '/')
+                            _this.$router.replace(_this.$route.query.redirect || '/tasks')
                         }
                     })
                 }
             }
         };
 
+        var NotFound = {
+            template: '#not-found',
+            delimiters: ["[[", "]]"]
+        };
+
         var router = new VueRouter({
             routes: [
                 {
-                    path: '/home',
-                    component: Home,
+                    path: '/tasks',
+                    component: Tasks,
                     beforeEnter: function (to, from, next) {
                         if(!Auth.loggedIn()){
                             next({
@@ -432,8 +585,36 @@
                     }
                 },
                 {
-                    path: '/profile',
-                    component: ProfileUser,
+                    path: '/tasks/new',
+                    component: TaskCreate,
+                    beforeEnter: function (to, from, next) {
+                        if(!Auth.loggedIn()){
+                            next({
+                                path: '/login',
+                                query: {redirect: to.fullPath}
+                            })
+                        }else{
+                            next()
+                        }
+                    }
+                },
+                {
+                    path: '/tags/new',
+                    component: TagCreate,
+                    beforeEnter: function (to, from, next) {
+                        if(!Auth.loggedIn()){
+                            next({
+                                path: '/login',
+                                query: {redirect: to.fullPath}
+                            })
+                        }else{
+                            next()
+                        }
+                    }
+                },
+                {
+                    path: '/user-info',
+                    component: UserInfo,
                     beforeEnter: function (to, from, next) {
                         if(!Auth.loggedIn()){
                             next({
@@ -447,13 +628,9 @@
                 },
                 {
                     path: '/users/new',
-                    component: UserCreate
-                },
-                {
-                    path: '/tasks/new',
-                    component: TaskCreate,
+                    component: UserCreate,
                     beforeEnter: function (to, from, next) {
-                        if(!Auth.loggedIn()){
+                        if(Auth.loggedIn()){
                             next({
                                 path: '/login',
                                 query: {redirect: to.fullPath}
@@ -485,8 +662,12 @@
                     }
                 },
                 {
+                    path: '/notfound',
+                    component: NotFound
+                },
+                {
                     path: '*',
-                    redirect: '/home'
+                    redirect: '/notfound'
                 }
             ]
         });
