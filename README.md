@@ -1,1 +1,1 @@
-# flaskでJWT認証するapi作ったンゴ
+# flaskでJWT認証するapi
